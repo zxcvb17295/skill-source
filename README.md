@@ -28,6 +28,8 @@ git submodule add -b <upstream-branch> <repository-url> sources/<source-name>
 
 Graphify 的上游使用 `skill-codex.md` 和平台專屬 references，不是標準 `SKILL.md`。同步腳本會把 Codex 版複製成一般檔案 `skills/graphify/SKILL.md`，並連結 Codex references；更新 Graphify submodule 後再執行同步腳本即可更新 adapter。
 
+自己寫的 skill 放在 `sources/local/<skill-name>/SKILL.md`。`sources/local/` 是一般目錄，不是 submodule，直接隨主 repo 版控；同步腳本會一樣建立 `skills/<skill-name>` link。依賴特定電腦資源的 skill（例如 `obsidian-vault` 需要本機的 Obsidian vault）要在第一步檢查資源是否存在，沒有時跳過。
+
 例如 `mattpocock/skills` 是 skill 集合，不是單一 skill repo；它的 skills 位於 `skills/engineering/<name>`、`skills/productivity/<name>` 等子目錄。加入來源並執行同步後，個別 skill 才會出現在 `skills/<name>`。
 
 移除來源時，使用 `git rm sources/<source-name>` 從主 repo 移除 submodule 記錄，再執行 `./scripts/sync-skill-links.sh` 清除失效的 skill links。只刪除來源資料夾不會自動刪除 `.gitmodules` 記錄或 symlink。
