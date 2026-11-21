@@ -1,2 +1,5 @@
 .DS_Store
 *.swp
+
+# Claude Code 同步進來的官方 skill，由 Claude 自行管理
+skills/synced/
