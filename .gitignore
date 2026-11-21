@@ -3,3 +3,6 @@
 
 # Claude Code 同步進來的官方 skill，由 Claude 自行管理
 skills/synced/
+
+# 手動建立的 /ai-team link，絕對路徑指向 ~/Documents/ai-team-state，換電腦時依該 repo README 重建
+skills/ai-team
