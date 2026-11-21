@@ -39,6 +39,21 @@ while IFS= read -r skill_file; do
   skill_name="$(basename "$skill_dir")"
   source_rel="${skill_dir#"$repo_root"/}"
   link_target="../$source_rel"
+
+  # A source directory literally named "skill" is too generic to be a link
+  # name, so use the SKILL.md frontmatter name instead (Agent-Reach -> agent-reach).
+  if [[ "$skill_name" == "skill" ]]; then
+    frontmatter_name="$(awk 'NR==1 && $0!="---"{exit} NR>1 && $0=="---"{exit} NR>1 && sub(/^name:[[:space:]]*/,""){print; exit}' "$skill_file")"
+    if [[ "$frontmatter_name" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+      old_link="$skills_dir/$skill_name"
+      if [[ -L "$old_link" && "$(readlink "$old_link")" == "$link_target" ]]; then
+        rm "$old_link"
+        printf '已移除舊名稱 skill link：%s\n' "$skill_name"
+      fi
+      skill_name="$frontmatter_name"
+    fi
+  fi
+
   link_path="$skills_dir/$skill_name"
   found=true
 

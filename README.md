@@ -24,7 +24,7 @@ git submodule add -b <upstream-branch> <repository-url> sources/<source-name>
 ./scripts/sync-skill-links.sh
 ```
 
-來源 repo 可以在根目錄提供一個 skill，也可以是包含多個 skills 的集合。同步腳本會為來源中非隱藏目錄內的 `SKILL.md` 建立平坦 skill links；`in-progress/` 目錄會略過。若不同來源有同名 skill，後加入的來源會以來源名稱作前綴建立 link，例如 `pm-skills-retro`，保留原有 skill 名稱。新增後提交 `.gitmodules`、submodule 指標與 `skills/` symlinks。
+來源 repo 可以在根目錄提供一個 skill，也可以是包含多個 skills 的集合。同步腳本會為來源中非隱藏目錄內的 `SKILL.md` 建立平坦 skill links；`in-progress/` 目錄會略過。若不同來源有同名 skill，後加入的來源會以來源名稱作前綴建立 link，例如 `pm-skills-retro`，保留原有 skill 名稱。Link 名稱預設是含 `SKILL.md` 的資料夾名稱；資料夾名稱剛好是籠統的 `skill` 時，改用 `SKILL.md` frontmatter 的 `name`（例如 Agent-Reach 的 `agent_reach/skill` 會連成 `agent-reach`），並移除指向同一目標的舊 `skill` link。新增後提交 `.gitmodules`、submodule 指標與 `skills/` symlinks。
 
 Graphify 的上游使用 `skill-codex.md` 和平台專屬 references，不是標準 `SKILL.md`。同步腳本會把 Codex 版複製成一般檔案 `skills/graphify/SKILL.md`，並連結 Codex references；更新 Graphify submodule 後再執行同步腳本即可更新 adapter。
 
