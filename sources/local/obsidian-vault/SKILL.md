@@ -25,10 +25,10 @@ Vault 路徑：`$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Acce
 
 1. 完整讀 vault 根目錄的 `AGENTS.md`。位置、模板、標籤與完成檢查都以它為準。
 2. 寫出草稿。要寫每日概要（每日日誌、當天回顧）時，照 [daily.md](daily.md) 收集與撰寫。內容屬於某個專案時，同一次也更新 `Projects/<專案>/設計概覽.md` 的 `updated`、現況、下一步與決策紀錄。
-3. 載入 `humanizer` skill，用它的 file mode 修順每一篇新增或改寫的筆記。只改敘述文字；frontmatter、程式碼、指令、路徑、表格資料與 `[[wikilink]]` 保持原樣，所有事實、數字與日期都要留住。這台電腦沒有 `humanizer` 時照常寫入，回報時說明。
+3. 每一篇新增或改寫的筆記都要載入 `humanizer` skill，用它的 file mode 修過才算寫完，卡片、每日日誌、handoff、設計概覽都一樣。只改敘述文字；frontmatter、程式碼、指令、路徑、表格資料與 `[[wikilink]]` 保持原樣，所有事實、數字與日期都要留住。載入不到 `humanizer` 時先停下，請使用者執行 `skill-source` 的 `install.sh`，裝好後再寫入。
 4. 照 `AGENTS.md` 的「完成檢查」逐項確認，最後回報新增或修改的筆記路徑。
 
-完成條件：每篇筆記都通過 `AGENTS.md` 完成檢查，Humanizer 找出的 AI 腔調都已改掉或說明保留原因。
+完成條件：每篇筆記都經過 `humanizer` 修改，也通過 `AGENTS.md` 完成檢查；Humanizer 找出的 AI 腔調都已改掉，或在回報時說明保留的原因。
 
 ## 範圍
 
