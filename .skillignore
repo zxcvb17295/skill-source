@@ -1,0 +1,11 @@
+# sync-skill-links.sh 略過的 SKILL.md 目錄。每行一個 glob，相對於 sources/。
+# 被略過的目錄若已有 skill link，同步時會一併移除。
+
+# gstack：測試 fixture、沙盒，以及給其他 agent（Capy、OpenClaw）的變體。
+# capy/skill/gstack 和根目錄同名，不略過就會把 skills/gstack 指離 repo 根，
+# 但 gstack 的 skill 寫死 ~/.claude/skills/gstack/bin/... 路徑。
+gstack/test/*
+gstack/qm/*
+gstack/capy/*
+gstack/openclaw/*
+gstack/browser-skills/*

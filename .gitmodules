@@ -22,3 +22,7 @@
 	path = sources/eli5
 	url = https://github.com/dreambigou/eli5
 	branch = main
+[submodule "sources/gstack"]
+	path = sources/gstack
+	url = https://github.com/garrytan/gstack.git
+	branch = main

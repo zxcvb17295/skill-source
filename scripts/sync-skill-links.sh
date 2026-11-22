@@ -13,6 +13,27 @@ fail() {
 [[ -d "$sources_dir" ]] || fail "找不到 sources/ 目錄"
 mkdir -p "$skills_dir"
 
+# .skillignore lists source directories (globs relative to sources/) whose
+# SKILL.md must not become a skill link: test fixtures, other-agent variants.
+ignore_globs=()
+if [[ -f "$repo_root/.skillignore" ]]; then
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -n "$line" ]] && ignore_globs+=("$line")
+  done < "$repo_root/.skillignore"
+fi
+
+is_ignored() {
+  local rel="$1" glob
+  for glob in ${ignore_globs[@]+"${ignore_globs[@]}"}; do
+    # shellcheck disable=SC2053
+    [[ "$rel" == $glob ]] && return 0
+  done
+  return 1
+}
+
 # Generated skill links are separate filesystem entries from their source
 # submodules. Remove only generated links whose source target has disappeared.
 for link_path in "$skills_dir"/*; do
@@ -23,6 +44,9 @@ for link_path in "$skills_dir"/*; do
       if [[ ! -e "$link_path" ]]; then
         rm "$link_path"
         printf '已移除失效 skill link：%s\n' "$(basename "$link_path")"
+      elif is_ignored "${link_target#../sources/}"; then
+        rm "$link_path"
+        printf '已移除 .skillignore 略過的 skill link：%s\n' "$(basename "$link_path")"
       fi
       ;;
   esac
@@ -35,6 +59,7 @@ while IFS= read -r skill_file; do
   case "$skill_dir/" in
     */in-progress/*) continue ;;
   esac
+  is_ignored "${skill_dir#"$sources_dir"/}" && continue
 
   skill_name="$(basename "$skill_dir")"
   source_rel="${skill_dir#"$repo_root"/}"
