@@ -18,3 +18,7 @@
 	path = sources/humanizer
 	url = https://github.com/blader/humanizer.git
 	branch = main
+[submodule "sources/eli5"]
+	path = sources/eli5
+	url = https://github.com/dreambigou/eli5
+	branch = main
