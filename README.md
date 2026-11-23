@@ -44,6 +44,24 @@ Graphify 的上游使用 `skill-codex.md` 和平台專屬 references，不是標
 
 安裝器會初始化來源 submodules、切到 `.gitmodules` 指定的分支、補上新 skill links，並把 `~/.agents/skills` 和 `~/.claude/skills` 連到本 repo 的 `skills/`。若目標路徑已存在，安裝器會列出內容並要求確認後才移除。
 
+### Windows（沒有 symlink 權限）
+
+Windows 預設不允許一般使用者建立 symlink，`install.sh` 會因此建出資料夾副本而不是連結，請改用 `install.ps1`。它用 NTFS Junction 取代 symlink（在沒有開發人員模式、非系統管理員的 Windows 11 上實測可用），流程與 `install.sh` 相同：
+
+```powershell
+.\install.ps1 -WhatIf   # 只預覽，不變更
+.\install.ps1           # 安裝
+.\install.ps1 -Yes      # 目標已存在時不再詢問
+```
+
+只想重建 `skills/` 的連結（例如更新 submodule 或 `.skillignore` 之後），執行 `.\scripts\sync-junctions.ps1 [-WhatIf]`。規則與 `sync-skill-links.sh` 相同，並會把 `core.symlinks=false` 留下的文字檔改成 Junction。可使用 Windows PowerShell 5.1 或 PowerShell 7。
+
+- 已存在的 `~/.agents/skills`、`~/.claude/skills` 若不是指向本 repo 的 Junction，會先改名為 `*.bak-<時間>`，不會刪除；是 Junction 時只解除連結，不會碰到目標內容。
+- Junction 目標是絕對路徑，repo 搬位置後需重新執行。Junction 只能指向本機磁碟上的目錄。
+- 工作區的 Junction 與 Git 記錄的 symlink 不同，`git status` 會顯示 `skills/` 內大量項目被刪除。不要在這種工作區執行 `git add -A` 或 `git add skills/`；可用 `git ls-files skills | ForEach-Object { git update-index --skip-worktree $_ }` 讓 Git 忽略。需要更新 `skills/` 的 symlink 記錄時，請在有 symlink 權限的機器上用 `sync-skill-links.sh`。
+- 實測在 `git reset --hard` 之後，`sources/graphify` 內被 `skills/graphify/references` Junction 指到的 8 個檔案不見了（原因未確認，推測是 Git 取代 `skills/` 項目時穿過了 Junction）。切換或 reset 這個 repo 後，若 `git -C sources/graphify status` 顯示檔案被刪除，用 `git -C sources/graphify checkout -- .` 還原。
+- 工作區的 submodule 有未提交變更時，安裝器會停止。`core.symlinks=false` 時，上游的 symlink 檔案（例如 mattpocock 的 `AGENTS.md`）會是文字檔，若顯示為已修改，用 `git checkout -- <檔案>` 還原。
+
 初版使用整個集合目錄的 symlink。若 Claude 無法載入該目錄，依設計再加入逐 skill symlink 與 macOS LaunchAgent 監看器。
 
 ## 更新
