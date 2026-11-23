@@ -62,6 +62,18 @@ Windows 預設不允許一般使用者建立 symlink，`install.sh` 會因此建
 - 實測在 `git reset --hard` 之後，`sources/graphify` 內被 `skills/graphify/references` Junction 指到的 8 個檔案不見了（原因未確認，推測是 Git 取代 `skills/` 項目時穿過了 Junction）。切換或 reset 這個 repo 後，若 `git -C sources/graphify status` 顯示檔案被刪除，用 `git -C sources/graphify checkout -- .` 還原。
 - 工作區的 submodule 有未提交變更時，安裝器會停止。`core.symlinks=false` 時，上游的 symlink 檔案（例如 mattpocock 的 `AGENTS.md`）會是文字檔，若顯示為已修改，用 `git checkout -- <檔案>` 還原。
 
+### WSL
+
+WSL 不要讓 `~/.agents/skills` 連到 `/mnt/c/...`：Codex 啟動時會逐項掃描 skills，跨 Windows 磁碟解析連結會讓初始化拖到 2～3 分鐘。改在 WSL 內執行：
+
+```sh
+./scripts/sync-wsl-skills.sh --dry-run   # 只預覽
+./scripts/sync-wsl-skills.sh             # 同步並切換入口
+./scripts/sync-wsl-skills.sh --restore   # 還原成切換前的入口
+```
+
+腳本把 `sources/`（不含 `.git`）與 `skills/` 用 rsync 鏡像到 `~/.local/share/skill-source`（可用 `SKILL_SOURCE_WSL_DIR` 改），把指向 `/mnt/c` repo 的 Junction 改成鏡像內的 symlink，確認沒有連結跑出鏡像後，才把 `~/.agents/skills` 指過去；原入口改名成 `~/.agents/skills.bak-<時間>`。WSL 原生 Claude 的 `~/.claude-sub/skills`、`~/.claude-api/skills`（可用 `CLAUDE_SKILL_DIRS` 改）會逐個 skill 連到鏡像，不動 Claude 自己管理的 `synced/`；已從鏡像消失的 skill 連結會一併清掉，`--restore` 會移除全部這類連結。鏡像不會自動更新：skill-source 有 pull、新增或移除 skill 之後要在 WSL 重跑一次（`--delete` 會一併清掉已移除的 skill）。只讀取 Windows 端，不改 Windows 的 `~/.agents/skills`。
+
 初版使用整個集合目錄的 symlink。若 Claude 無法載入該目錄，依設計再加入逐 skill symlink 與 macOS LaunchAgent 監看器。
 
 ## 更新
