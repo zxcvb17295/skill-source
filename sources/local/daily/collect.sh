@@ -83,7 +83,7 @@ section "4. Vault 當天新增或修改的筆記"
   | sed "s|^$VAULT/||" | sort
 
 section "5. Claude Code 對話（使用者訊息）"
-find "$HOME/.claude/projects" -name '*.jsonl' -newermt "$D" 2>/dev/null | while read -r f; do
+find "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/" -name '*.jsonl' -newermt "$D" 2>/dev/null | while read -r f; do
   out=$(jqr -r --arg d "$D" "$JQ_TPE"'
         select(.type=="user" and (.isMeta|not) and .timestamp and (.timestamp|day)==$d)
         | (.message.content | if type=="string" then . else (map(select(.type=="text").text) | join(" ")) end) as $t
@@ -94,7 +94,7 @@ find "$HOME/.claude/projects" -name '*.jsonl' -newermt "$D" 2>/dev/null | while 
 done
 
 section "6. Codex 對話（使用者訊息與結尾回覆）"
-find "$HOME/.codex/sessions" -name '*.jsonl' -newermt "$D" 2>/dev/null | while read -r f; do
+find "$HOME/.codex/sessions/" -name '*.jsonl' -newermt "$D" 2>/dev/null | while read -r f; do
   out=$(jqr -r --arg d "$D" "$JQ_TPE"'
         select(.timestamp and (.timestamp|day)==$d)
         | if .type=="session_meta" then "cwd: \(.payload.cwd | sub(env.HOME; "~"))"
