@@ -80,6 +80,6 @@ argument-hint: "[YYYY-MM-DD]"
 
 ## 3. 收尾
 
-照 obsidian-vault「寫入」的第 2 到第 4 步做完：日誌裡有工作的專案，若有 `Projects/<專案>/設計概覽.md` 就同一次更新它 的 `updated`、現況、下一步與決策紀錄；日報、前一篇日報和改到的設計概覽都用 humanizer 修過，humanizer 只改這次新寫的條目和今日總結，既有條目不動；照 `AGENTS.md` 的完成檢查確認（沒有 `AGENTS.md` 就照 obsidian-vault 的替代檢查），最後回報新增或修改的筆記路徑與略過的項目。
+照 obsidian-vault「寫入」的第 2、4、5 步做完（日報是時間軸，不用拆成原子筆記）：日誌裡有工作的專案，若有 `Projects/<專案>/設計概覽.md` 就同一次更新它 的 `updated`、現況、下一步與決策紀錄；日報、前一篇日報和改到的設計概覽都用 humanizer 修過，humanizer 只改這次新寫的條目和今日總結，既有條目不動；照 `AGENTS.md` 的完成檢查確認（沒有 `AGENTS.md` 就照 obsidian-vault 的替代檢查），最後回報新增或修改的筆記路徑與略過的項目。
 
 完成條件：每篇改到的筆記都經過 humanizer，也通過完成檢查。
