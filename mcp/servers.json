@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "oracle": {
+      "command": "node",
+      "args": ["${windows_home}\\Documents\\oracle-mcp\\server.js"],
+      "env": {
+        "ORACLE_MCP_CONFIG": "${windows_home}\\.config\\oracle-mcp\\config.json"
+      },
+      "wsl": {
+        "command": "${windows_node}",
+        "env": {
+          "WSLENV": "ORACLE_MCP_CONFIG"
+        }
+      }
+    }
+  }
+}
