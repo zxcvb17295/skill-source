@@ -15,8 +15,17 @@ if [ -n "${TEAM_STATE_DIR:-}" ]; then
   exit 1
 fi
 
+win_profile() {  # WSL：取 Windows 的 %USERPROFILE% 並轉成 /mnt/c/...；不是 WSL 就不印
+  command -v wslpath >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1 || return 0
+  local p
+  p=$(cd /mnt/c 2>/dev/null && cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')
+  [ -n "$p" ] && wslpath -u "$p"
+}
+
+wp=$(win_profile)
 for d in "$HOME/Documents/team-state" \
-         "${USERPROFILE:+$(to_unix "$USERPROFILE")/Documents/team-state}"; do
+         "${USERPROFILE:+$(to_unix "$USERPROFILE")/Documents/team-state}" \
+         "${wp:+$wp/Documents/team-state}"; do
   [ -n "$d" ] && [ -f "$d/AGENT.md" ] && { printf '%s\n' "$d"; exit 0; }
 done
 exit 1
