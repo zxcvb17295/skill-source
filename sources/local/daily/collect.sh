@@ -115,7 +115,7 @@ prev=""
        | awk -F/ -v d="$D" '{n=substr($NF,1,10); if (n<d) print n"\t"$0}' | sort | tail -1 | cut -f2)
 if [ -n "$prev" ]; then
   echo "來源：${prev#$VAULT/}"
-  tr -d '\r' < "$prev" | grep -E '^\s*- \[ \] *[^ ]' || echo "無"
+  tr -d '\r' < "$prev" | grep -E '^\s*- \[ \] *[^ ]' | grep -v '~~' || echo "無"
 else
   echo "無"
 fi
