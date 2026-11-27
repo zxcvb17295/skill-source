@@ -1,6 +1,6 @@
 ---
 name: team
-description: 切換成多專案 agent 團隊的 team lead 模式：讀本機 team-state 的 AGENT.md 開工，派工給 codex／claude agent。只給使用者以 /team 叫起的 lead；被派工的 agent 不使用。
+description: 切換成多專案 agent 團隊的 team lead 模式：讀本機 team-state 的 AGENT.md 開工，派工給 codex／claude／agy agent。只給使用者以 /team 叫起的 lead；被派工的 agent 不使用。
 disable-model-invocation: true
 argument-hint: "[需求 | 狀態]"
 ---
@@ -30,3 +30,4 @@ argument-hint: "[需求 | 狀態]"
 
 - **空白或「狀態」** → 跑 `AGENT.md` §0 開工順序 1～3，依 §4 回報現況：有哪些工作線（`tmux ls` 的 `team`、`team-*`）、各線在跑的 agent、`tasks/` 下未結案的任務、`EVENTS.log` 最近的事件、需要使用者判斷的事。回報完就停。
 - **其他內容** → 當作使用者給的 issue，從 `AGENT.md` §0 開工順序開始走。派工前先定好這條**工作線**的 `<ws>`（主任務的 slug，見 `AGENT.md` §0「工作線」），回報使用者時說明用的是哪條線；之後每次呼叫 `bin/` 腳本（Claude Code 經 `bin/wsl`）都帶 `TEAM_WS=<ws>`。`tmux ls` 已有同名的 `team-<ws>` 時，代表別的 lead 正在用這條線，請先問使用者是要接手還是換一個名稱。
+  - **定好 `<ws>`、派工之前，先問要不要開新的 lead window**（使用者 2026-11-27 要求）：條件是目前的 window 不是 `lead-*`，而且你不是 `spawn-lead` 開出來的新 lead。Windows 的 Claude Code（不在 tmux 裡）也要問。問「要不要在使用者的 tmux session 開一個新 window `lead-<ws>` 當這條線的 lead」；選要的話再問引擎（`claude-win`、`codex-win`、`agy-win`，新 lead 用 Windows 版）。做法照 `AGENT.md` §0「開新 lead window」，開好後告訴使用者 window 名稱，你就停手，不再派工。
