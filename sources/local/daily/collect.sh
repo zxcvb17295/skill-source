@@ -38,7 +38,7 @@ if [ -n "$VAULT" ]; then
   [ -f "$VAULT/AGENTS.md" ] && echo "AGENTS.md：有" || echo "AGENTS.md：沒有"
   [ -d "$VAULT/Projects" ] && echo "Projects/：有" || echo "Projects/：沒有"
 else
-  echo "找不到 vault：設定環境變數 OBSIDIAN_VAULT，或確認 Obsidian 有開過 vault。第 3、4、7 段只會收到 repo 裡的資料。"
+  echo "找不到 vault：設定環境變數 OBSIDIAN_VAULT，或確認 Obsidian 有開過 vault。第 3、4、8 段只會收到 repo 裡的資料。"
   cat "$VERR"
   DFOLDER=""
 fi
@@ -108,7 +108,38 @@ find "$HOME/.codex/sessions/" -name '*.jsonl' -newermt "$D" 2>/dev/null | while 
   echo "$out" | grep -qE '^[0-9]{2}:[0-9]{2} ' && printf '### %s\n%s\n' "$(basename "$f" .jsonl)" "$out"
 done
 
-section "7. 前一篇日報未完成的待處理"
+section "7. Antigravity 對話（使用者訊息與結尾回覆）"
+AGY_DIR="${ANTIGRAVITY_CLI_DIR:-$HOME/.gemini/antigravity-cli}"
+AGY_HOME_M=$(cygpath -m "$HOME" 2>/dev/null || echo "$HOME")
+find "$AGY_DIR/brain/" -maxdepth 4 -path '*/.system_generated/logs/transcript.jsonl' -newermt "$D" 2>/dev/null | while read -r f; do
+  id="${f%/.system_generated/logs/transcript.jsonl}"; id="${id##*/}"
+  out=$(jqr -r --arg d "$D" "$JQ_TPE"'
+        def ureq:
+          (if contains("<USER_REQUEST>") then
+             split("<USER_REQUEST>")[1] | split("</USER_REQUEST>")[0] | split("<ADDITIONAL_METADATA>")[0]
+           else . end) | gsub("^\\s+|\\s+$"; "");
+        select(.created_at and (.created_at|day)==$d)
+        | if .type=="USER_INPUT" then
+            ((.content // "") | ureq) as $t
+            | select(($t|length)>0 and ($t|noise|not))
+            | "\(.created_at|hm) 使用者：\($t | gsub("\\s+"; " ") | .[0:'$MAX'])"
+          elif .type=="PLANNER_RESPONSE" and (has("tool_calls")|not) and ((.content // "")|length)>0 then
+            "\(.created_at|hm) Antigravity：\(.content | gsub("\\s+"; " ") | .[0:'$MAX'])"
+          else empty end' "$f" 2>/dev/null)
+  if [ -n "$out" ]; then
+    cwd=""
+    [ -f "$AGY_DIR/history.jsonl" ] && cwd=$(jqr -r --arg id "$id" --arg hm "$AGY_HOME_M" --arg hp "$HOME" '
+      select(.conversationId==$id and .workspace) | .workspace | gsub("\\\\"; "/")
+      | if startswith($hm) then "~" + .[$hm|length:]
+        elif startswith($hp) then "~" + .[$hp|length:]
+        else . end' "$AGY_DIR/history.jsonl" 2>/dev/null | tail -1)
+    printf '### %s\n' "$id"
+    [ -n "$cwd" ] && printf 'cwd: %s\n' "$cwd"
+    printf '%s\n' "$out"
+  fi
+done
+
+section "8. 前一篇日報未完成的待處理"
 # 檔名開頭是 YYYY-MM-DD 的筆記都算日報，日期取檔名前 10 個字
 prev=""
 [ -n "$VAULT" ] && prev=$(find "$VAULT/${DFOLDER}" -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*.md' -not -path '*/.obsidian/*' 2>/dev/null \
