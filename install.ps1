@@ -135,4 +135,11 @@ function Set-SkillsLink([string]$Path) {
 
 Set-SkillsLink (Join-Path $HOME '.agents\skills')
 Set-SkillsLink (Join-Path $HOME '.claude\skills')
+
+# 4. Antigravity (~/.gemini/config/skills) ------------------------------------
+$syncAgy = Join-Path $root 'scripts\sync-antigravity-skills.ps1'
+$global:LASTEXITCODE = 0
+if ($WhatIfPreference) { & $syncAgy -WhatIf } else { & $syncAgy }
+if ($LASTEXITCODE -ne 0) { throw 'sync-antigravity-skills.ps1 reported warnings; fix them and rerun.' }
+
 Write-Host 'Done.'

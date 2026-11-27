@@ -56,6 +56,8 @@ Windows 預設不允許一般使用者建立 symlink，`install.sh` 會因此建
 
 只想重建 `skills/` 的連結（例如更新 submodule 或 `.skillignore` 之後），執行 `.\scripts\sync-junctions.ps1 [-WhatIf]`。規則與 `sync-skill-links.sh` 相同，並會把 `core.symlinks=false` 留下的文字檔改成 Junction。可使用 Windows PowerShell 5.1 或 PowerShell 7。
 
+Antigravity 在 Windows 上會略過 `~/.agents/skills` 底下的子層 Junction，只載入實體目錄；`install.ps1` 會順帶執行 `.\scripts\sync-antigravity-skills.ps1 [-WhatIf]`，將 `sources/` 的各個 skill 以 `robocopy /MIR` 增量複製到 `~/.gemini/config/skills/`（並記錄於 `.skill-source-managed.json` 以自動清理移除的 skill）。日後更新或新增 skill 後重跑該腳本或 `install.ps1` 即可同步。
+
 - 已存在的 `~/.agents/skills`、`~/.claude/skills` 若不是指向本 repo 的 Junction，會先改名為 `*.bak-<時間>`，不會刪除；是 Junction 時只解除連結，不會碰到目標內容。
 - Junction 目標是絕對路徑，repo 搬位置後需重新執行。Junction 只能指向本機磁碟上的目錄。
 - 工作區的 Junction 與 Git 記錄的 symlink 不同，`git status` 會顯示 `skills/` 內大量項目被刪除。不要在這種工作區執行 `git add -A` 或 `git add skills/`；可用 `git ls-files skills | ForEach-Object { git update-index --skip-worktree $_ }` 讓 Git 忽略。需要更新 `skills/` 的 symlink 記錄時，請在有 symlink 權限的機器上用 `sync-skill-links.sh`。
